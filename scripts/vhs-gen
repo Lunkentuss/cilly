@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Script to generate gifs from vhs tapes, see
+# https://github.com/charmbracelet/vhs
+
+set -eu
+
+nix build .
+export PATH="$PWD"/result/bin:$PATH
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_dir"' EXIT
+
+mkdir -p "$tmp_dir/tapes"
+cp docs/*.tape "$tmp_dir/tapes"
+mkdir "$tmp_dir/output"
+
+cd "$tmp_dir"
+git init
+
+cat << EOF > .gitlab-ci.yml
+test:
+  image: ubuntu:latest
+  script:
+    - echo hello world!
+EOF
+git add .gitlab-ci.yml
+git commit -am "init: big bang"
+# Run cilly once to make sure all OCI images are pulled before running the vhs tapes
+cilly
+
+for tape in tapes/* ; do
+  rm .gitlab-ci.yml
+  vhs "$tape"
+done
+
+cd -
+cp "$tmp_dir/output"/* docs

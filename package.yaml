@@ -1,0 +1,95 @@
+name:                cilly
+version:             0.1.0
+github:              "lunkentuss/cilly"
+license:             MIT
+author:              "Peter Hansson"
+maintainer:          "peter.hansson17@gmail.com"
+copyright:           "2021 Peter Hansson"
+
+extra-source-files:
+  - README.md
+  - CHANGELOG.md
+
+description: A cli tool for running CI pipelines locally
+
+dependencies:
+  - base >= 4.7 && < 5
+  - aeson
+  - utf8-string
+  - text
+  - unordered-containers
+  - bytestring
+  - yaml
+  - http-client
+  - network
+  - http-types
+  - directory
+  - containers
+  - stm
+  - path
+  - path-io
+  - unix
+  # For BrickController
+  - brick
+  - vty
+  - split
+  - vector
+  - lens
+  - random
+  - optparse-applicative
+
+library:
+  source-dirs: src
+
+executables:
+  cilly:
+    main:                Main.hs
+    source-dirs:         src
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - cilly
+
+  cilly-helper:
+    main:                Main.hs
+    source-dirs:         helper
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - cilly
+
+tests:
+  cilly-test:
+    main:                Main.hs
+    source-dirs:         test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - cilly
+      - HTF
+
+default-extensions:
+  - DataKinds
+  - DeriveGeneric
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - MultiParamTypeClasses
+  - RecordWildCards
+  - ScopedTypeVariables
+  - TupleSections
+  - TemplateHaskell
+  - TypeApplications
+  - TypeSynonymInstances
+  - TypeFamilies
+  - TypeOperators
+  - OverloadedRecordDot
+  - OverloadedStrings
+  - StandaloneDeriving

@@ -1,0 +1,277 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           cilly
+version:        0.1.0
+description:    A cli tool for running CI pipelines locally
+homepage:       https://github.com/lunkentuss/cilly#readme
+bug-reports:    https://github.com/lunkentuss/cilly/issues
+author:         Peter Hansson
+maintainer:     peter.hansson17@gmail.com
+copyright:      2021 Peter Hansson
+license:        MIT
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/lunkentuss/cilly
+
+library
+  exposed-modules:
+      CliController
+      CliOptions
+      Concurrent
+      ContainerFacade
+      Docker
+      DockerIO
+      DockerTypes
+      ExceptionWrapper
+      Git
+      GitlabSource
+      Graph
+      JobDispatcher
+      JobExecutor
+      JobMessage
+      Main
+      Shell
+      SocketIO
+      Source
+      TuiController
+  other-modules:
+      Paths_cilly
+  hs-source-dirs:
+      src
+  default-extensions:
+      DataKinds
+      DeriveGeneric
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TupleSections
+      TemplateHaskell
+      TypeApplications
+      TypeSynonymInstances
+      TypeFamilies
+      TypeOperators
+      OverloadedRecordDot
+      OverloadedStrings
+      StandaloneDeriving
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , containers
+    , directory
+    , http-client
+    , http-types
+    , lens
+    , network
+    , optparse-applicative
+    , path
+    , path-io
+    , random
+    , split
+    , stm
+    , text
+    , unix
+    , unordered-containers
+    , utf8-string
+    , vector
+    , vty
+    , yaml
+  default-language: Haskell2010
+
+executable cilly
+  main-is: Main.hs
+  other-modules:
+      CliController
+      CliOptions
+      Concurrent
+      ContainerFacade
+      Docker
+      DockerIO
+      DockerTypes
+      ExceptionWrapper
+      Git
+      GitlabSource
+      Graph
+      JobDispatcher
+      JobExecutor
+      JobMessage
+      Shell
+      SocketIO
+      Source
+      TuiController
+      Paths_cilly
+  hs-source-dirs:
+      src
+  default-extensions:
+      DataKinds
+      DeriveGeneric
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TupleSections
+      TemplateHaskell
+      TypeApplications
+      TypeSynonymInstances
+      TypeFamilies
+      TypeOperators
+      OverloadedRecordDot
+      OverloadedStrings
+      StandaloneDeriving
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , cilly
+    , containers
+    , directory
+    , http-client
+    , http-types
+    , lens
+    , network
+    , optparse-applicative
+    , path
+    , path-io
+    , random
+    , split
+    , stm
+    , text
+    , unix
+    , unordered-containers
+    , utf8-string
+    , vector
+    , vty
+    , yaml
+  default-language: Haskell2010
+
+executable cilly-helper
+  main-is: Main.hs
+  other-modules:
+      ArchiveArtifacts
+      CliOptions
+      ExtractArtifacts
+      Paths_cilly
+  hs-source-dirs:
+      helper
+  default-extensions:
+      DataKinds
+      DeriveGeneric
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TupleSections
+      TemplateHaskell
+      TypeApplications
+      TypeSynonymInstances
+      TypeFamilies
+      TypeOperators
+      OverloadedRecordDot
+      OverloadedStrings
+      StandaloneDeriving
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , cilly
+    , containers
+    , directory
+    , http-client
+    , http-types
+    , lens
+    , network
+    , optparse-applicative
+    , path
+    , path-io
+    , random
+    , split
+    , stm
+    , text
+    , unix
+    , unordered-containers
+    , utf8-string
+    , vector
+    , vty
+    , yaml
+  default-language: Haskell2010
+
+test-suite cilly-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      ContainerFacadeTest
+      GraphTest
+      Paths_cilly
+  hs-source-dirs:
+      test
+  default-extensions:
+      DataKinds
+      DeriveGeneric
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TupleSections
+      TemplateHaskell
+      TypeApplications
+      TypeSynonymInstances
+      TypeFamilies
+      TypeOperators
+      OverloadedRecordDot
+      OverloadedStrings
+      StandaloneDeriving
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HTF
+    , aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , cilly
+    , containers
+    , directory
+    , http-client
+    , http-types
+    , lens
+    , network
+    , optparse-applicative
+    , path
+    , path-io
+    , random
+    , split
+    , stm
+    , text
+    , unix
+    , unordered-containers
+    , utf8-string
+    , vector
+    , vty
+    , yaml
+  default-language: Haskell2010

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eux
+
+cilly_helper_hash="$(
+  nix derivation show .#cilly-helper-container \
+    | jq -r '.[].outputs.out.path' \
+    | sed -E 's|/nix/store/([^-]*).*|\1|' \
+)"
+sed -i -E \
+  's|(cillyHelperImage = "lunkentuss/cilly-helper:).*"|\1'"$cilly_helper_hash"'"|' \
+  src/Main.hs
