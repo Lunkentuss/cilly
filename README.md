@@ -15,6 +15,21 @@ Run `cilly --ui tui` to run the application with a TUI interface:
 
 ![cilly cli](/docs/tui.gif)
 
+## Develop
+
+Nix can used to build a statically compiled binary by running
+
+```bash
+nix build .
+```
+
+which only works on *linux*. *Mac* users can build a dynamically compiled
+binary by running
+
+```bash
+nix build .#dynamic
+```
+
 ## Missing Features
 
 Cilly is currently missing some core functionality but is planned to be
