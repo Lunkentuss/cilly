@@ -17,14 +17,14 @@ Run `cilly --ui tui` to run the application with a TUI interface:
 
 ## Develop
 
-Nix can used to build a statically compiled binary by running
+Nix can used to build a statically linked binary by running
 
 ```bash
 nix build .
 ```
 
-which only works on *linux*. *Mac* users can build a dynamically compiled
-binary by running
+which only works on *linux*. *Mac* users can build a dynamically linked binary
+by running
 
 ```bash
 nix build .#dynamic
