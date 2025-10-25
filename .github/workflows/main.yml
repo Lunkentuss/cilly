@@ -29,7 +29,7 @@ jobs:
         uses: allenevans/set-env@v2.2.0
         with:
           BINARY_OS: ${{ runner.os }}
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         with:
           name: cilly-${{ env.BINARY_OS }}-x86_64
           path: dist/cilly
