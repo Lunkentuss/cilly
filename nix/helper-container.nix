@@ -12,6 +12,7 @@ dockerTools.buildImage {
       bashInteractive
       coreutils
       git
+      gnused
     ] ++ extraPaths;
   };
 

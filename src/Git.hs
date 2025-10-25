@@ -22,6 +22,6 @@ gitLocalCloneCommands sourceDir targetDir commitId =
   , Shell.ExecuteShell $ "git remote add origin " <> sourceDir
   , Shell.ExecuteShell $ "git remote set-url origin " <> sourceDir
   , Shell.ExecuteShell   "git fetch origin"
-  , Shell.ExecuteShell $ "git checkout " <> fromMaybe "master" commitId
+  , Shell.ExecuteShell $ "git checkout " <> fromMaybe "$(git remote show origin | sed -n '/HEAD branch/s/.*:[ ]*//p')" commitId
   , Shell.ExecuteShell   "cd -"
   ]

@@ -35,7 +35,7 @@ toShell :: ShellCommand -> String
 toShell command = case command of
   ExecuteShell command -> command & escape
   ExecuteShellQuiet command -> command & escape & (<> " &>/dev/null")
-  LogShell log -> "echo " ++ greenify (escape $ escape log)
+  LogShell log -> log & escapeInQuoteC & quoteC & greenify & ("echo "++)
 
 variablesToShell :: Map.Map String String -> [String]
 variablesToShell variables = variables
@@ -44,17 +44,23 @@ variablesToShell variables = variables
 
 colorize :: Int -> String -> String
 colorize code str =
-  "$\\'\\\\x1b["
-  ++ show code
-  ++ ";1m"
+  quoteAnsiC (
+    "\\\\033["
+    ++ show code
+    ++ ";1m"
+  )
   ++ str
-  ++ "\\\\x1b[0m\\'"
+  ++ quoteAnsiC "\\\\033[0m"
 
 greenify :: String -> String
 greenify = colorize 32
 quote :: String -> String
 quote str = "'" ++ str ++ "'"
+quoteAnsiC :: String -> String
+quoteAnsiC = ("$"++) . quoteC
+quoteC :: String -> String
+quoteC str = "\\x27" ++ str ++ "\\x27"
 escape :: String -> String
-escape = rmFirstAndLast . show
-rmFirstAndLast :: [a] -> [a]
-rmFirstAndLast = init . tail
+escape = concatMap (\c -> if c == '\'' then "\\x27" else [c])
+escapeInQuoteC :: String -> String
+escapeInQuoteC = concatMap (\c -> if c == '\'' then "\\x27\"\\x27\"\\x27" else [c])
