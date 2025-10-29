@@ -42,6 +42,27 @@ functionality:
 - Passing environment variables with `artifacts:reports:dotenv`
 - Child pipelines
 
+## Testing
+
+Snapshot testing is used to test the output when running cilly with the cli
+interface. Running
+
+```
+test-snapshot-check
+```
+
+will run the snapshot test suite for all `gitlab-ci.yml` files found in
+`snapshot_test/input` directory and outputs the stdout results into the
+`snapshot_test/output_tmp` directory. The content of the
+`snapshot_test/output_tmp` directory is then compared to the output of the
+`snapshot_test/output` directory which is the current saved snapshot that is
+checked out into VCS. To substitute the saved snapshot with the current
+snapshot, run
+
+```bash
+test-snapshot-gen
+```
+
 ## Similar tools
 
 - [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local): CLI tool to

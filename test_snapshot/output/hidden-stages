@@ -1,0 +1,16 @@
+Checking out master as 4aae1050
+[1m[Running job: job1][0m
+[32;1m$ echo pre[0m
+pre
+[1m[Running job: job2][0m
+[32;1m$ echo build[0m
+build
+[1m[Running job: job3][0m
+[32;1m$ echo test[0m
+test
+[1m[Running job: job4][0m
+[32;1m$ echo deploy[0m
+deploy
+[1m[Running job: job5][0m
+[32;1m$ echo post[0m
+post

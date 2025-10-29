@@ -1,0 +1,29 @@
+job1:
+  image: ubuntu:latest
+  stage: .pre
+  script:
+    - echo pre
+
+job2:
+  image: ubuntu:latest
+  stage: build
+  script:
+    - echo build
+
+job3:
+  image: ubuntu:latest
+  stage: test
+  script:
+    - echo test
+
+job4:
+  image: ubuntu:latest
+  stage: deploy
+  script:
+    - echo deploy
+
+job5:
+  image: ubuntu:latest
+  stage: .post
+  script:
+    - echo post

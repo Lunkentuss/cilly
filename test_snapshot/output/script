@@ -1,0 +1,5 @@
+Checking out master as 4553cddf
+[1m[Running job: job][0m
+[32;1m$ foo="foo"[0m
+[32;1m$ echo "foo"[0m
+foo

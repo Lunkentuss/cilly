@@ -1,0 +1,10 @@
+Checking out master as f6ed7f91
+[1m[Running job: job][0m
+[32;1m$ echo foo[0m
+foo
+[32;1m$ echo 'foo'[0m
+foo
+[32;1m$ echo "foo"[0m
+foo
+[32;1m$ echo "f"o"o"[0m
+foo

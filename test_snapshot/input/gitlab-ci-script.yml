@@ -1,0 +1,5 @@
+job:
+  image: ubuntu:latest
+  script:
+    - foo="foo"
+    - echo "foo"

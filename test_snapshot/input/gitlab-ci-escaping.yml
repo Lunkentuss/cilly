@@ -1,0 +1,8 @@
+job:
+  stage: build
+  image: ubuntu:latest
+  script:
+    - echo foo
+    - echo 'foo'
+    - echo "foo"
+    - echo "f"o"o"

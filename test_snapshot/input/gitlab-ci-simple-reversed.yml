@@ -1,0 +1,22 @@
+stages:
+  - deploy
+  - test
+  - build
+
+job1:
+  image: ubuntu:latest
+  stage: build
+  script:
+    - echo build
+
+job2:
+  image: ubuntu:latest
+  stage: test
+  script:
+    - echo test
+
+job3:
+  image: ubuntu:latest
+  stage: deploy
+  script:
+    - echo deploy
