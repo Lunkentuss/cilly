@@ -1,0 +1,16 @@
+# Here we're testing if before_script and script are running in the same shell
+# session and that after_script is not. The following example therefor should
+# print bar in script and print nothing in after_script.
+job:
+  stage: build
+  image: ubuntu:latest
+  before_script:
+    - echo before_script
+    - foo="bar"
+  script:
+    - echo script
+    - echo $foo
+    - foo="baz"
+  after_script:
+    - echo after_script
+    - echo $foo

@@ -1,0 +1,9 @@
+# Here we're testing if the after_script fails the job will still succeed.
+job:
+  stage: build
+  image: ubuntu:latest
+  script:
+    - echo script
+  after_script:
+    - i_dont_exists
+    - echo "I will not run"

@@ -1,0 +1,6 @@
+Checking out master as 0845f97c
+[1m[Running job: job][0m
+[32;1m$ echo script[0m
+script
+[32;1m$ i_dont_exists[0m
+/usr/bin/bash: line 3: i_dont_exists: command not found

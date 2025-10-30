@@ -1,0 +1,14 @@
+Checking out master as 03a44cc9
+[1m[Running job: job][0m
+[32;1m$ echo before_script[0m
+before_script
+[32;1m$ foo="bar"[0m
+[32;1m$ echo script[0m
+script
+[32;1m$ echo $foo[0m
+bar
+[32;1m$ foo="baz"[0m
+[32;1m$ echo after_script[0m
+after_script
+[32;1m$ echo $foo[0m
+
