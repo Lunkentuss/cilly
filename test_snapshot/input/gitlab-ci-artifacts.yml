@@ -1,0 +1,25 @@
+job1:
+  stage: build
+  image: ubuntu:latest
+  script:
+    - echo foo > job1
+  artifacts:
+    paths:
+      - job1
+
+job2:
+  stage: test
+  image: ubuntu:latest
+  script:
+    - cat job1
+    - echo bar > job2
+  artifacts:
+    paths:
+      - job2
+
+job3:
+  stage: deploy
+  image: ubuntu:latest
+  script:
+    - cat job1
+    - cat job2

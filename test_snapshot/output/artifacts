@@ -1,0 +1,12 @@
+Checking out master as 74443203
+[1m[Running job: job1][0m
+[32;1m$ echo foo > job1[0m
+[1m[Running job: job2][0m
+[32;1m$ cat job1[0m
+foo
+[32;1m$ echo bar > job2[0m
+[1m[Running job: job3][0m
+[32;1m$ cat job1[0m
+foo
+[32;1m$ cat job2[0m
+bar
