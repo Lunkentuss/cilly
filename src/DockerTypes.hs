@@ -27,6 +27,7 @@ import GHC.Generics (Generic)
 
 data ContainerConf = ContainerConf {
     image :: String
+  , entrypoint :: Maybe [String]
   , command :: [String]
   , tty :: Bool
   , attachStdin :: Bool
@@ -69,6 +70,7 @@ newtype Volume = Volume { name :: String }
 
 containerConf = ContainerConf {
     image = "unknown"
+  , entrypoint = Nothing
   , command = ["/bin/sh"]
   , tty = False
   , attachStdin = True
@@ -92,6 +94,7 @@ instance ToJSON ContainerConf where
   toJSON ContainerConf {..} =
     object [
         "Image" .= image
+      , "Entrypoint" .= entrypoint
       , "Cmd" .= command
       , "Tty" .= tty
       , "AttachStdin" .= attachStdin

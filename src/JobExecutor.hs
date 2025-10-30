@@ -102,6 +102,7 @@ runJobNoExceptionHandling messages job finishedJobs JobConfig {..} = do
                 cloneJobContainerName
                 (\_ -> return ())
                 cillyHelperImage
+                Nothing
                 (Git.gitLocalCloneCommands
                   gitOriginDir
                   projectOCIDir
@@ -114,6 +115,7 @@ runJobNoExceptionHandling messages job finishedJobs JobConfig {..} = do
                 extractArtifactsJobContainerName
                 (\_ -> return ())
                 cillyHelperImage
+                Nothing
                 (
                   -- TODO: Normalize name of job. Dont forget to update both
                   -- places.
@@ -148,6 +150,7 @@ runJobNoExceptionHandling messages job finishedJobs JobConfig {..} = do
                 containerName
                 (sendMessage . Job.JobOutput jobName)
                 jobImage
+                job.entrypoint
                 (scriptToShellCommands script)
                 variables
                 [projectBind]
@@ -161,6 +164,7 @@ runJobNoExceptionHandling messages job finishedJobs JobConfig {..} = do
                   containerName
                   (\_ -> return ())
                   cillyHelperImage
+                  Nothing
                   (
                     job
                     & (Source.paths . Source.artifacts)

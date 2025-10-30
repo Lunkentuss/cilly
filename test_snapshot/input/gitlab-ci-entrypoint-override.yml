@@ -1,0 +1,9 @@
+job:
+  stage: build
+  image:
+    # This image sets an entrypoint to the terraform binary, so we're testing
+    # if setting the entrypoint: [""] removes the entrypoint.
+    name: hashicorp/terraform:1.13
+    entrypoint: [""]
+  script:
+    - echo hello

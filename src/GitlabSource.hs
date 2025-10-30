@@ -25,6 +25,7 @@ import Data.Yaml (
   , (.:?)
   , (.!=)
   )
+import qualified Data.Yaml as Yaml
 import Data.Aeson.Types (Key, Parser, Value)
 import GHC.Generics (Generic)
 import System.Exit
@@ -138,6 +139,7 @@ data Pipeline = Pipeline {
 data Job = Job {
     name :: String
   , image :: Maybe String
+  , entrypoint :: Maybe [String]
   , stage :: String
   , artifacts :: Artifacts
   , beforeScript :: [String]
@@ -161,7 +163,15 @@ instance FromJSON Pipeline where
 
 parseJob :: String -> Value -> Parser Job
 parseJob name = withObject "Job" $ \o -> do
-  image <- o .:? "image"
+  imageValue <- o .:? "image"
+  (image, entrypoint) <- case imageValue of
+    Just imageValue' -> case imageValue' of
+      Yaml.Object imageObject -> do
+        image <- imageObject .:? "name"
+        entrypoint <- imageObject .:? "entrypoint"
+        return (image, entrypoint)
+      Yaml.String image -> return (Just $ unpack image, Nothing)
+    Nothing -> return (Nothing, Nothing)
   stage <- o .:? "stage" .!= defaultStage
   artifacts <- o .:? "artifacts" .!= Artifacts []
   beforeScript <- o .:? "before_script" .!= []

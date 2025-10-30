@@ -58,11 +58,13 @@ findShell = [
 
 createContainerConf
   :: String
+  -> Maybe [String]
   -> [DockerTypes.Bind]
   -> ContainerConf
-createContainerConf image binds =
+createContainerConf image entrypoint binds =
   containerConf {
       image = image
+    , entrypoint = entrypoint
     , command = [ "sh", "-c", findShell ]
     , binds = binds
   }
@@ -90,26 +92,28 @@ runContainerCommands
   :: String
   -> (String -> IO ())
   -> String
+  -> Maybe [String]
   -> Shell.ShellCommands
   -> Map.Map String String
   -> [DockerTypes.Bind]
   -> IO DockerTypes.ContainerInfo
-runContainerCommands containerName logCallback image commands variables binds =
-  runContainerAndCleanUp containerName commands variables logCallback (createContainerConf image binds)
+runContainerCommands containerName logCallback image entrypoint commands variables binds =
+  runContainerAndCleanUp containerName commands variables logCallback (createContainerConf image entrypoint binds)
 
 runContainerCommandsRecordLines
   :: String
   -> String
+  -> Maybe [String]
   -> Shell.ShellCommands
   -> Map.Map String String
   -> [DockerTypes.Bind]
   -> IO ([String], DockerTypes.ContainerInfo)
-runContainerCommandsRecordLines containerName image commands variables binds = do
+runContainerCommandsRecordLines containerName image entrypoint commands variables binds = do
   record <- newIORef ""
   dockerInfo <- runContainerAndCleanUp
     containerName
     commands
     variables
     (\output -> readIORef record >>= (\prev -> writeIORef record $ prev <> output))
-    (createContainerConf image binds)
+    (createContainerConf image entrypoint binds)
   (,dockerInfo) . lines <$> readIORef record

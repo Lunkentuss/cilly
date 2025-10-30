@@ -127,6 +127,7 @@ main = do
     (gitInfoLines,gitInfoContainerInfo) <- runContainerCommandsRecordLines
       containerName
       cillyHelperImage
+      Nothing
       [
         Shell.ExecuteShell $ "cd " <> root
       , Shell.ExecuteShell   "git rev-parse HEAD"               -- commitID
@@ -159,6 +160,7 @@ main = do
     (cloneLines, cloneContainerInfo) <- runContainerCommandsRecordLines
       initCloneContainerName
       cillyHelperImage
+      Nothing
       (Git.gitLocalCloneCommands root gitProjectDir Nothing)
       Map.empty
       [

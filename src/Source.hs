@@ -34,6 +34,7 @@ data Script = Script {
 data Job = Job {
     name :: String
   , image :: Maybe String
+  , entrypoint :: Maybe [String]
   , stage :: String
   , artifacts :: Artifacts
   , scripts :: [Script]
