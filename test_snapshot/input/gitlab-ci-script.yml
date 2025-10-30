@@ -1,5 +1,5 @@
 job:
   image: ubuntu:latest
   script:
-    - foo="foo"
-    - echo "foo"
+    - foo="bar"
+    - echo "$foo"
