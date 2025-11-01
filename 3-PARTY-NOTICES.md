@@ -1,6 +1,6 @@
-# cilly-0.2.0
+# cilly-0.3.0
 
-Package: cilly-0.2.0 (License: MIT)
+Package: cilly-0.3.0 (License: MIT)
 
 ## BSD-2
 
