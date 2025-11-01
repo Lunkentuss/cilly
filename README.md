@@ -47,7 +47,7 @@ functionality:
 Snapshot testing is used to test the output when running cilly with the cli
 interface. Running
 
-```
+```bash
 test-snapshot-check
 ```
 
@@ -67,7 +67,7 @@ The snapshot test suite supports hints that are entered directly within the
 input files as comments. The hints are used to control the behaviour of the
 test. The following is a list of all supported hints:
 
-```
+```bash
 # test: fails           <- The pipeline is asserted to fail
 # test: branch main     <- Use main branch instead of default master branch
 ```
