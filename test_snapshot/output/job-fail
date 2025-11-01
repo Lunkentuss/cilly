@@ -1,0 +1,7 @@
+Checking out master as 13637b86
+[1m[Running job: job][0m
+[32;1m$ echo foo[0m
+foo
+[32;1m$ i_dont_exist[0m
+/usr/bin/bash: line 3: i_dont_exist: command not found
+Job returned a non zero exit code: 127

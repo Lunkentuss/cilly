@@ -63,6 +63,15 @@ snapshot, run
 test-snapshot-gen
 ```
 
+The snapshot test suite supports hints that are entered directly within the
+input files as comments. The hints are used to control the behaviour of the
+test. The following is a list of all supported hints:
+
+```
+# test: fails           <- The pipeline is asserted to fail
+# test: branch main     <- Use main branch instead of default master branch
+```
+
 ## Similar tools
 
 - [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local): CLI tool to

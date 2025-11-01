@@ -1,0 +1,7 @@
+# test: branch main
+
+job:
+  stage: build
+  image: ubuntu:latest
+  script:
+    - echo foo

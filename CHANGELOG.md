@@ -4,7 +4,9 @@ format adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [x.x.x] - xxxx-xx-xx
 
-- feat: add support for entrypoint override in job
+- feat: add support for entrypoint override in jobs e.g.
+  `my_job.image.entrypoint` and setting the image name by `my_job.image.name`
+  instead of directly setting it from `my_job.image`.
 
 ## [0.2.0] - 2025-10-25
 

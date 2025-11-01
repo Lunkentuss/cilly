@@ -1,0 +1,9 @@
+# test: fails
+
+job:
+  image: ubuntu:latest
+  stage: build
+  script:
+    - echo foo
+    - i_dont_exist
+    - echo bar

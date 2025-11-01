@@ -1,10 +1,24 @@
-import System.Process (callProcess, callCommand)
-import System.Environment (getArgs)
+import Data.Function ((&))
 import System.Directory (getCurrentDirectory, listDirectory)
+import System.Environment (getArgs)
+import System.IO (readFile)
+import System.Process (callProcess, callCommand)
+import Data.List (isPrefixOf, stripPrefix)
 
 relPathCilly = "/result/bin/cilly"
+testLinePrefix = "# test:"
 
 data Cmd = Gen | Check deriving (Show)
+
+data TestConfig = TestConfig {
+    branch :: String
+  , success :: Bool
+} deriving (Show)
+
+defaultTestConfig = TestConfig {
+    branch = "master"
+  , success = True
+}
 
 -- This program executes the snapshot testing. It can be executed with the
 -- following commands:
@@ -41,6 +55,27 @@ main = do
       genOutputDir outputDirTmp
       callCommand $ "diff -u " ++ outputDir ++ " " ++ outputDirTmp
 
+setTestConfigOption :: [String] -> TestConfig -> TestConfig
+setTestConfigOption option config = case option of
+  ("branch":branch:_) -> config { branch = branch }
+  ("fails":_) -> config { success = False }
+  _ -> config
+
+testConfig :: FilePath -> IO TestConfig
+testConfig gitlabCiFile = do
+  file <- readFile gitlabCiFile
+  let config = foldr
+        (setTestConfigOption . maybe [] words . stripPrefix testLinePrefix)
+        defaultTestConfig
+        (file & lines & filter (isPrefixOf testLinePrefix))
+  return config
+
+scriptAssertSuccess cmd success = let
+  scriptFail = "; exit 1"
+  onSuccess = if success then "" else scriptFail
+  onFail = if success then scriptFail else ""
+  in "if " ++ cmd ++ " ; then echo 'Success' " ++ onSuccess ++ " ; else echo 'Fail' " ++ onFail ++ "; fi"
+
 executeTest
   :: FilePath
   -> FilePath
@@ -48,19 +83,21 @@ executeTest
   -> IO ()
 executeTest cillyBin outputDir gitlabCiFile = do
   putStrLn $ "Generating output for: " ++ gitlabCiFile
+  config <- testConfig gitlabCiFile
+  let runCilly = cillyBin ++ " > "
+        ++ outputDir
+        ++ "/$(basename "
+          ++ gitlabCiFile
+          ++ " | sed -E \"s/gitlab-ci-([^.]*)[.]yml/\\1/\")"
   callCommand $
     "bash -c '"
     ++ "    tmpdir=$(mktemp -d -t XXXXXX.cilly-snapshot-test)"
     ++ " && export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'"
     ++ " && export GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'"
     ++ " && cd $tmpdir"
-    ++ " && git init &> /dev/null"
+    ++ " && git init -b '" ++ branch config ++ "' &> /dev/null"
     ++ " && cp " ++ gitlabCiFile ++ " .gitlab-ci.yml"
     ++ " && git add .gitlab-ci.yml"
     ++ " && git -c 'user.name=foo' -c user.email='foo@bar.com' commit -am 'tmp' &> /dev/null"
-    ++ " && " ++ cillyBin ++ " > "
-        ++ outputDir
-        ++ "/$(basename "
-          ++ gitlabCiFile
-          ++ " | sed -E \"s/gitlab-ci-([^.]*)[.]yml/\\1/\")"
+    ++ " && " ++ scriptAssertSuccess runCilly (success config)
     ++ "'"
