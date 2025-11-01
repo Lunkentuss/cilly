@@ -74,7 +74,7 @@ scriptAssertSuccess cmd success = let
   scriptFail = "; exit 1"
   onSuccess = if success then "" else scriptFail
   onFail = if success then scriptFail else ""
-  in "if " ++ cmd ++ " ; then echo 'Success' " ++ onSuccess ++ " ; else echo 'Fail' " ++ onFail ++ "; fi"
+  in "if " ++ cmd ++ " ; then : " ++ onSuccess ++ " ; else : " ++ onFail ++ "; fi"
 
 executeTest
   :: FilePath

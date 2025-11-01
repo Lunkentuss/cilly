@@ -1,0 +1,7 @@
+# Tests if a docker image where /bin/bash is not available will use /bin/sh as
+# the shell instead.
+job:
+  stage: build
+  image: alpine:latest
+  script:
+    - echo $0
