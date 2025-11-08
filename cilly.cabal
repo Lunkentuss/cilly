@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           cilly
-version:        0.3.0
+version:        0.4.0
 description:    A cli tool for running CI pipelines locally
 homepage:       https://github.com/lunkentuss/cilly#readme
 bug-reports:    https://github.com/lunkentuss/cilly/issues

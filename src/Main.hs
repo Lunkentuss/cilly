@@ -29,7 +29,7 @@ import qualified CliController
 import qualified TuiController
 
 cillyHelperImage :: String
-cillyHelperImage = "lunkentuss/cilly-helper:0.3.0"
+cillyHelperImage = "lunkentuss/cilly-helper:0.4.0"
 
 gitProjectDir :: String
 gitProjectDir = "/git-project"
