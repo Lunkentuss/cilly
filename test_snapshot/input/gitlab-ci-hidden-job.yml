@@ -1,0 +1,9 @@
+.job:
+  image: ubuntu:latest
+  script:
+    - echo foo
+
+job:
+  image: ubuntu:latest
+  script:
+    - echo bar
