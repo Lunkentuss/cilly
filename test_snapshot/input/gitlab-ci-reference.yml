@@ -1,0 +1,21 @@
+job1:
+  image: alpine:latest
+  stage: build
+  script:
+    - echo $0
+    - echo "1"
+    - echo "2"
+
+job2:
+  image: alpine:latest
+  stage: test
+  script:
+    - echo "3"
+    - echo "4"
+
+job3:
+  image: !reference [job1, image]
+  stage: deploy
+  script:
+    - !reference [job1, script]
+    - !reference [job2, script]

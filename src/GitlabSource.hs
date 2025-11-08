@@ -2,14 +2,19 @@ module GitlabSource (
   makeSource
 ) where
 
-import Data.ByteString.Lazy (ByteString, pack)
+import Data.ByteString.Lazy (ByteString)
+import qualified Data.Vector as Vector
 import qualified Data.Map as Map
 import Data.Function ((&))
 import Data.Maybe (fromMaybe)
-import Data.Text (unpack)
-import Data.Text hiding (elem, filter, map, findIndex,all)
-import Data.List hiding (map,all)
+import Data.Text (Text, unpack, replace)
+import qualified Data.Text.IO as TIO
+import qualified Data.Text.Encoding as TE
+import Data.Text hiding (elem, filter, map, findIndex, all, concatMap)
+import Data.List hiding (map, all, isPrefixOf)
 import Data.Aeson.KeyMap (toList)
+import qualified Data.Aeson.KeyMap as KM
+import qualified Data.Aeson.Key as Key
 import Data.Aeson.Key (toString)
 import Data.Yaml (
     encode
@@ -20,17 +25,24 @@ import Data.Yaml (
   , withObject
   , Object
   , ParseException
-  , decodeFileEither
+  , decodeEither
   , (.:)
   , (.:?)
   , (.!=)
   )
 import qualified Data.Yaml as Yaml
-import Data.Aeson.Types (Key, Parser, Value)
+import Data.Aeson.Types (Key, Parser, Value(..))
 import GHC.Generics (Generic)
 import System.Exit
 
 import qualified Source
+
+-- The yaml library doesn't support yaml tags since its parse results are Aeson
+-- values. This string is used in a preprocess stage that substitutes tags and
+-- injects this arbitrary string into the first element of the array, which is
+-- then used to check if an array is a tagged reference or not.
+referenceSubstituteString :: Text
+referenceSubstituteString = "__ReFeReNcE_SuBsTiTuTe_StrinGG__"
 
 isUnavailableJobName :: String -> Bool
 isUnavailableJobName entry = entry `elem` unavailableJobNames where
@@ -65,10 +77,12 @@ makeSource = Source.Source {
 
 makePipeline :: Source.Path -> IO Source.Pipeline
 makePipeline root = do
-  objectEither <- decodeFileEither $ root ++ ".gitlab-ci.yml"
-    :: IO (Either ParseException Pipeline)
-  object <- case objectEither of
-    Right x -> return x
+  gitlabCiPreprocessed <-
+      TE.encodeUtf8
+      . replace "!reference [" ("[" <> referenceSubstituteString <> ",")
+      <$> TIO.readFile ".gitlab-ci.yml"
+  object <- case decodeEither gitlabCiPreprocessed of
+    Right pipeline -> return pipeline
     Left err -> exit $ show err
   return $ makePipelineNoIO object
 
@@ -121,7 +135,7 @@ makeJob (Job {..}) jobDependencies pipelineVariables = Source.Job {
 makeArtifacts Artifacts {..} = Source.Artifacts {..}
 
 parseKeyMap
-  :: Object
+  :: Yaml.Object
   -> (Key -> Bool)
   -> (Key -> Value -> Parser a)
   -> Parser [a]
@@ -129,6 +143,56 @@ parseKeyMap object filterf parser =
   toList object
     & filter (\(key, _) -> filterf key)
     & traverse (uncurry parser)
+
+-- TODO: Fix
+-- substituteReferences :: Yaml.Object -> Either String Yaml.Object
+substituteReferences :: Yaml.Object -> Yaml.Object
+substituteReferences pipeline = mapObject pipeline
+  where
+    resolveRef :: Value -> [String] -> Maybe Value
+    resolveRef value refList = case refList of
+      (key:refList') -> case value of
+        Object object -> case KM.lookup (Key.fromText . pack $ key) object of
+          Just childValue -> resolveRef childValue refList'
+          Nothing -> Nothing
+        _ -> Nothing
+      _ -> Just value
+
+    mapObject :: Yaml.Object -> Yaml.Object
+    mapObject = KM.map (fst . go)
+
+    isReferenceString :: Value -> Bool
+    isReferenceString value = case value of
+      String text -> text == referenceSubstituteString
+      _ -> False
+
+    filterArrayStrings :: [Value] -> [String]
+    filterArrayStrings = concatMap filterString
+      where
+        filterString :: Value -> [String]
+        filterString v = case v of
+          String str -> [unpack str]
+          _ -> []
+
+    go :: Value -> (Value, Bool)
+    go value = case value of
+      Object object -> (Object $ mapObject object, False)
+      Array array -> case Vector.toList array of
+        (x:xs) -> case x of
+          x | isReferenceString x -> case resolveRef (Object pipeline) (filterArrayStrings xs) of
+              Just value -> (value, True)
+              _ -> (String "", False) -- TODO: Fix
+          _ -> goArray $ x : xs
+        list -> goArray list
+      v -> (v, False)
+      where
+        goArray list = (Array $ Vector.fromList $ concatMap (mapArrayValue . go) list, False)
+        mapArrayValue :: (Value, Bool) -> [Value]
+        mapArrayValue valueTuple = case valueTuple of
+          (value, True) -> case value of
+            Array array -> Vector.toList array
+            v -> [v]
+          (value, False) -> [value]
 
 data Pipeline = Pipeline {
   stages :: [String],
@@ -156,10 +220,14 @@ newtype Artifacts = Artifacts {
 instance FromJSON Artifacts
 
 instance FromJSON Pipeline where
-  parseJSON = withObject "Pipeline" $ \v -> Pipeline
-    <$> v .:? "stages" .!= defaultStages
-    <*> parseKeyMap v (isValidJobName . toString) (parseJob . toString)
-    <*> v .:? "variables" .!= Map.empty
+  parseJSON = withObject "Pipeline" $ \v' ->
+    let
+      v = substituteReferences v'
+    in
+      Pipeline
+        <$> v .:? "stages" .!= defaultStages
+        <*> parseKeyMap v (isValidJobName . toString) (parseJob . toString)
+        <*> v .:? "variables" .!= Map.empty
 
 parseJob :: String -> Value -> Parser Job
 parseJob name = withObject "Job" $ \o -> do
@@ -171,6 +239,7 @@ parseJob name = withObject "Job" $ \o -> do
         entrypoint <- imageObject .:? "entrypoint"
         return (image, entrypoint)
       Yaml.String image -> return (Just $ unpack image, Nothing)
+      _ -> fail "Invalid image input type"
     Nothing -> return (Nothing, Nothing)
   stage <- o .:? "stage" .!= defaultStage
   artifacts <- o .:? "artifacts" .!= Artifacts []

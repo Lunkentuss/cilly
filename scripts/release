@@ -13,6 +13,8 @@ sed -i -E \
   's|(cillyHelperImage = "lunkentuss/cilly-helper:).*"|\1'"$1"'"|' \
   src/Main.hs
 
+make cilly.cabal
+
 echo "git commit -am 'release: v$1'"
 echo "git tag -a 'v$1' -m 'v$1'"
 echo "git push --atomic origin master 'v$1'"

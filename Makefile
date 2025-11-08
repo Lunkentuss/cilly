@@ -9,6 +9,10 @@ lint:
 	@hlint helper/*
 	@hlint test_snapshot/*
 
+.PHONY: cilly.cabal
+cilly.cabal:
+	hpack
+
 .PHONY: test-snapshot-check
 test-snapshot-check:
 	runghc test_snapshot/main.hs check

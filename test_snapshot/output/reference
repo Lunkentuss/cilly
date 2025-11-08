@@ -1,0 +1,24 @@
+Checking out master as 7f06dd35
+[1m[Running job: job1][0m
+[32;1m$ echo $0[0m
+/bin/sh
+[32;1m$ echo "1"[0m
+1
+[32;1m$ echo "2"[0m
+2
+[1m[Running job: job2][0m
+[32;1m$ echo "3"[0m
+3
+[32;1m$ echo "4"[0m
+4
+[1m[Running job: job3][0m
+[32;1m$ echo $0[0m
+/bin/sh
+[32;1m$ echo "1"[0m
+1
+[32;1m$ echo "2"[0m
+2
+[32;1m$ echo "3"[0m
+3
+[32;1m$ echo "4"[0m
+4
