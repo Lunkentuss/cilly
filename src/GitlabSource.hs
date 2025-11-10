@@ -47,6 +47,7 @@ referenceSubstituteString = "__ReFeReNcE_SuBsTiTuTe_StrinGG__"
 isUnavailableJobName :: String -> Bool
 isUnavailableJobName entry = entry `elem` unavailableJobNames where
   unavailableJobNames = [
+    "default",
     "image",
     "services",
     "stages",
@@ -195,9 +196,10 @@ substituteReferences pipeline = mapObject pipeline
           (value, False) -> [value]
 
 data Pipeline = Pipeline {
-  stages :: [String],
-  jobs :: [Job],
-  variables :: Map.Map String String
+    stages :: [String]
+  , jobs :: [Job]
+  , variables :: Map.Map String String
+  , default_ :: Default
 } deriving (Show)
 
 data Job = Job {
@@ -213,6 +215,30 @@ data Job = Job {
   , variables :: Map.Map String String
 } deriving (Show)
 
+-- https://docs.gitlab.com/ci/yaml/#default
+data Default = Default {
+    defaultBeforeScript :: [String]
+  , defaultAfterScript :: Maybe [String]
+  , defaultArtifacts :: Artifacts
+  , defaultImage :: Maybe String
+} deriving (Show, Generic)
+
+emptyDefault :: Default
+emptyDefault = Default {
+    defaultBeforeScript = []
+  , defaultAfterScript = Nothing
+  , defaultArtifacts = Artifacts []
+  , defaultImage = Nothing
+}
+
+instance FromJSON Default where
+  parseJSON = withObject "Default" $ \v ->
+    Default
+      <$> v .:? "before_script" .!= defaultBeforeScript emptyDefault
+      <*> v .:? "after_script" .!= defaultAfterScript emptyDefault
+      <*> v .:? "artifacts" .!= defaultArtifacts emptyDefault
+      <*> v .:? "image" .!= defaultImage emptyDefault
+
 newtype Artifacts = Artifacts {
   paths :: [String]
 } deriving (Show, Generic)
@@ -223,14 +249,15 @@ instance FromJSON Pipeline where
   parseJSON = withObject "Pipeline" $ \v' ->
     let
       v = substituteReferences v'
-    in
-      Pipeline
-        <$> v .:? "stages" .!= defaultStages
-        <*> parseKeyMap v (isValidJobName . toString) (parseJob . toString)
-        <*> v .:? "variables" .!= Map.empty
+    in do
+      stages <- v .:? "stages" .!= defaultStages
+      default_ <- v .:? "default" .!= emptyDefault
+      jobs <- parseKeyMap v (isValidJobName . toString) (parseJob default_ . toString)
+      variables <- v .:? "variables" .!= Map.empty
+      return Pipeline {..}
 
-parseJob :: String -> Value -> Parser Job
-parseJob name = withObject "Job" $ \o -> do
+parseJob :: Default -> String -> Value -> Parser Job
+parseJob default_  name = withObject "Job" $ \o -> do
   imageValue <- o .:? "image"
   (image, entrypoint) <- case imageValue of
     Just imageValue' -> case imageValue' of
@@ -240,12 +267,12 @@ parseJob name = withObject "Job" $ \o -> do
         return (image, entrypoint)
       Yaml.String image -> return (Just $ unpack image, Nothing)
       _ -> fail "Invalid image input type"
-    Nothing -> return (Nothing, Nothing)
+    Nothing -> return (defaultImage default_, Nothing)
   stage <- o .:? "stage" .!= defaultStage
-  artifacts <- o .:? "artifacts" .!= Artifacts []
-  beforeScript <- o .:? "before_script" .!= []
+  artifacts <- o .:? "artifacts" .!= defaultArtifacts default_
+  beforeScript <- o .:? "before_script" .!= defaultBeforeScript default_
   script <- o .: "script"
-  afterScript <- o .:? "after_script" .!= Nothing
+  afterScript <- o .:? "after_script" .!= defaultAfterScript default_
   allowFailure <- o .:? "allow_failure" .!= False
   variables <- o .:? "variables" .!= Map.empty
   return $ Job {name = name, ..}

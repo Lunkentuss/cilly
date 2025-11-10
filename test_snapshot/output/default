@@ -1,0 +1,15 @@
+Checking out master as 75e41a36
+[1m[Running job: job_no_override][0m
+[32;1m$ echo foo[0m
+foo
+[32;1m$ echo "bar $0"[0m
+bar /bin/sh
+[32;1m$ echo baz[0m
+baz
+[1m[Running job: job_with_override][0m
+[32;1m$ echo "override foo"[0m
+override foo
+[32;1m$ echo "bar $0"[0m
+bar /usr/bin/bash
+[32;1m$ echo "override baz"[0m
+override baz

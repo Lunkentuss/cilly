@@ -1,0 +1,23 @@
+default:
+  before_script:
+    - echo foo
+  after_script:
+    - echo baz
+  artifacts:
+    paths: []
+  image: alpine:latest
+
+job_no_override:
+  stage: build
+  script:
+    - echo "bar $0"
+
+job_with_override:
+  stage: test
+  image: ubuntu:latest
+  before_script:
+    - echo "override foo"
+  script:
+    - echo "bar $0"
+  after_script:
+    - echo "override baz"
