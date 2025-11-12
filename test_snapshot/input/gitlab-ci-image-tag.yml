@@ -1,0 +1,11 @@
+job_1:
+  image: koalaman/shellcheck-alpine:v0.10.0
+  stage: build
+  script:
+    - shellcheck --version | grep 'version:'
+
+job_2:
+  image: koalaman/shellcheck-alpine:v0.11.0
+  stage: test
+  script:
+    - shellcheck --version | grep 'version:'
