@@ -48,7 +48,7 @@ Snapshot testing is used to test the output when running cilly with the cli
 interface. Running
 
 ```bash
-test-snapshot-check
+make test-snapshot-check
 ```
 
 will run the snapshot test suite for all `gitlab-ci.yml` files found in
@@ -60,7 +60,7 @@ checked out into VCS. To substitute the saved snapshot with the current
 snapshot, run
 
 ```bash
-test-snapshot-gen
+make test-snapshot-gen
 ```
 
 The snapshot test suite supports hints that are entered directly within the
